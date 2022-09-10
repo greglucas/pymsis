@@ -13,6 +13,11 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
+    env:
+      FC: gfortran-11
+      F77: gfortran-11
+      F90: gfortran-11
+      CC: clang
 
     steps:
       - uses: actions/checkout@v3
