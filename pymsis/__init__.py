@@ -14,5 +14,5 @@ if os.name == "nt":
         print(p)
     os.add_dll_directory(pymsis_dir)
 
-    os.environ["PATH"] = f"{pymsis_dir};" f"{os.environ['PATH']}"
+    os.environ["PATH"] = f"{pymsis_dir};{os.environ['PATH']}"
     del pymsis_dir

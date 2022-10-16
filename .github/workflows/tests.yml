@@ -66,11 +66,14 @@ jobs:
 
     - name: Test with pytest
       run: |
-        echo $PYTHONPATH
-        ls $PYTHONPATH
         export PYTHONPATH="C:\hostedtoolcache\windows\Python\3.9.13\x64\Lib\site-packages\pymsis"
         echo $PYTHONPATH
         ls $PYTHONPATH
+        echo "LINEBREAK"
+        export PYTHONPATH="C:\hostedtoolcache\windows\Python\3.9.13\x64\lib\site-packages\pymsis"
+        echo $PYTHONPATH
+        ls $PYTHONPATH
+
         pytest --pyargs pymsis --color=yes --cov --cov-report=xml
 
     - name: Upload code coverage
