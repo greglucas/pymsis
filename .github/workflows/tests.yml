@@ -62,7 +62,13 @@ jobs:
 
     - name: Prep test
       run: |
-        echo "PYTHONPATH=C:\hostedtoolcache\windows\Python\3.9.13\x64\Lib\site-packages\pymsis" >> $env:GITHUB_ENV
+        export PYTHONPATH="C:\hostedtoolcache\windows\Python\3.9.13\x64\lib\site-packages\pymsis"
+        echo $PYTHONPATH
+        ls $PYTHONPATH
+        cd $PYTHONPATH
+        echo "IN DIRECTORY"
+        ls
+        python -c "import msis20f"
 
     - name: Test with pytest
       run: |
