@@ -7,6 +7,7 @@ project(
   meson_version: '>= 0.63.0',
   default_options: [
     'buildtype=debugoptimized',
+    'default_library=static',
     'c_std=c99',
     'fortran_std=legacy',
   ],
