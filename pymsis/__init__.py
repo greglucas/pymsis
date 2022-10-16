@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import sys
 
 __version__ = "0.5.0"
 
@@ -12,7 +13,11 @@ if os.name == "nt":
     print("INIT DIR:", pymsis_dir)
     for p in pymsis_dir.iterdir():
         print(p)
+    os.add_dll_directory(Path.cwd())
     os.add_dll_directory(pymsis_dir)
+    sys.path.append(str(pymsis_dir))
+    sys.path.append(str(Path.cwd()))
+    print("SYSTEM PATH:", sys.path)
 
     os.environ["PATH"] = f"{pymsis_dir};{os.environ['PATH']}"
     del pymsis_dir
