@@ -50,6 +50,20 @@ jobs:
       run: |
         python .github/workflows/download_mirror.py
 
+    - name: Meson-only build
+      run: |
+        pip install meson ninja numpy
+        meson setup build --prefix=$PWD/build
+        ninja -j 2 -C build
+        cd build
+        meson install
+    
+    - name: Meson list
+      run: |
+        cd build/Lib/site-packages/pymsis
+        ls
+        python -c "import msis00f"
+
     - name: Install pymsis
       run: |
         python -m pip install --upgrade pip
