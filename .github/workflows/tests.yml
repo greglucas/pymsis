@@ -68,7 +68,7 @@ jobs:
         cd $PYTHONPATH
         echo "IN DIRECTORY"
         ls
-        python -c "import msis20f"
+        python -c "import msis20f.cp39-win_amd64"
 
     - name: Test with pytest
       run: |
