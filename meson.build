@@ -38,8 +38,8 @@ is_windows = host_machine.system() == 'windows'
 # Platform detection
 is_mingw = is_windows and cc.get_id() == 'gcc'
 if is_windows
-  # For mingw-w64, link statically against the UCRT.
-  gcc_link_args = ['-lucrt', '-static']
+  # Need static libraries to get libgfortran
+  gcc_link_args = ['-static']
   if is_mingw
     add_project_link_arguments(gcc_link_args, language: ['c'])
   endif
