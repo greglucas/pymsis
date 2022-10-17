@@ -34,6 +34,20 @@ if ff.has_argument('-Wno-conversion')
   add_project_arguments('-Wno-conversion', language: 'fortran')
 endif
 
+is_windows = host_machine.system() == 'windows'
+# Platform detection
+is_mingw = is_windows and cc.get_id() == 'gcc'
+if is_windows
+  # For mingw-w64, link statically against the UCRT.
+  gcc_link_args = ['-lucrt', '-static']
+  if is_mingw
+    add_project_link_arguments(gcc_link_args, language: ['c'])
+  endif
+  if meson.get_compiler('fortran').get_id() == 'gcc'
+    add_project_link_arguments(gcc_link_args, language: ['fortran'])
+  endif
+endif
+
 generate_f2pymod = files('tools/generate_f2pymod.py')
 
 # https://mesonbuild.com/Python-module.html
