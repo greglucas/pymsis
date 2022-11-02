@@ -61,7 +61,9 @@ jobs:
         flake8 . --count --show-source --statistics
 
     - name: Test with pytest
-      run: pytest --color=yes --cov --cov-report=xml --pyargs pymsis
+      run: |
+        # TODO: Get coverage for other modules without specifying pymsis.msis directly
+        pytest --color=yes --cov=pymsis.msis --cov-report=xml --pyargs pymsis
 
     - name: Upload code coverage
       uses: codecov/codecov-action@v2
