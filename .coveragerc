@@ -1,3 +1,8 @@
+[paths]
+source =
+   .
+   */site-packages
+
 [run]
 branch = true
 source = pymsis
