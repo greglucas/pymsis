@@ -38,7 +38,7 @@ jobs:
           echo "F90=gfortran" >> $GITHUB_ENV
           echo "CC=gcc" >> $GITHUB_ENV
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         name: Install Python
         with:
           python-version: '3.9'

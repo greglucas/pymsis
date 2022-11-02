@@ -13,6 +13,11 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
+    env:
+      FC: gfortran-11
+      F77: gfortran-11
+      F90: gfortran-11
+      CC: gcc-11
     defaults:
       run:
         shell: bash -l {0}
@@ -31,19 +36,15 @@ jobs:
           echo "F90=gfortran" >> $GITHUB_ENV
           echo "CC=gcc" >> $GITHUB_ENV
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         name: Install Python
         with:
           python-version: '3.9'
 
-      - name: Brew installs
-        run: |
-          brew install gfortran
-          gfortran --version
-
       - name: Download source files
         run: |
-          python .github/workflows/download_mirror.py
+          which python
+          python3 .github/workflows/download_mirror.py
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.9.0
