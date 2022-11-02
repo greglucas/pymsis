@@ -18,6 +18,7 @@ jobs:
       F77: gfortran-11
       F90: gfortran-11
       CC: gcc-11
+      ARCHFLAGS: "-arch arm64"
     defaults:
       run:
         shell: bash -l {0}
