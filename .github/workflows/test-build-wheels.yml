@@ -18,7 +18,6 @@ jobs:
       F77: gfortran-11
       F90: gfortran-11
       CC: gcc-11
-      ARCHFLAGS: "-arch arm64"
     defaults:
       run:
         shell: bash -l {0}
@@ -36,6 +35,32 @@ jobs:
           echo "F77=gfortran" >> $GITHUB_ENV
           echo "F90=gfortran" >> $GITHUB_ENV
           echo "CC=gcc" >> $GITHUB_ENV
+
+      - name: Install gfortran for ARM64
+        run: |
+          curl -L -O https://github.com/isuruf/gcc/releases/download/gcc-10-arm-20210728/gfortran-darwin-arm64.tar.gz
+          # export GFORTRAN_SHA=f26990f6f08e19b2ec150b9da9d59bd0558261dd
+          # if [[ "$(shasum gfortran-darwin-arm64.tar.gz)" != "${GFORTRAN_SHA}  gfortran-darwin-arm64.tar.gz" ]]; then
+          #     echo "shasum mismatch for gfortran-darwin-arm64"
+          #     exit 1
+          # fi
+          sudo mkdir -p /opt/
+          sudo cp "gfortran-darwin-arm64.tar.gz" /opt/gfortran-darwin-arm64.tar.gz
+          pushd /opt
+              sudo tar -xvf gfortran-darwin-arm64.tar.gz
+              sudo rm gfortran-darwin-arm64.tar.gz
+          popd
+          export FC_ARM64="$(find /opt/gfortran-darwin-arm64/bin -name "*-gfortran")"
+          libgfortran="$(find /opt/gfortran-darwin-arm64/lib -name libgfortran.dylib)"
+          libdir=$(dirname $libgfortran)
+
+          export FC_ARM64_LDFLAGS="-L$libdir -Wl,-rpath,$libdir"
+
+          which gfortran
+          export FC=$FC_ARM64
+          echo $FC
+          echo "FC=${FC}" >> $GITHUB_ENV
+          echo "LDFLAGS=${FC_ARM64_LDFLAGS}" >> $GITHUB_ENV
 
       - uses: actions/setup-python@v4
         name: Install Python
