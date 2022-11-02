@@ -20,7 +20,7 @@ jobs:
       CC: gcc-9
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash
 
     steps:
       - uses: actions/checkout@v3
@@ -36,7 +36,7 @@ jobs:
           echo "F90=gfortran" >> $GITHUB_ENV
           echo "CC=gcc" >> $GITHUB_ENV
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         name: Install Python
         with:
           python-version: '3.9'
@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         name: Install Python
         with:
           python-version: '3.9'
@@ -74,8 +74,8 @@ jobs:
 
       - name: Build sdist
         run: |
-          python -m pip install numpy
-          python setup.py sdist
+          python -m pip install meson-python meson ninja build
+          python -m build --sdist
 
       - uses: actions/upload-artifact@v2
         with:
