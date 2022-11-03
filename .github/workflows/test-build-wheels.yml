@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
     env:
       FC: gfortran-9
       F77: gfortran-9
@@ -51,7 +51,6 @@ jobs:
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
           # Skip 32 bit windows builds due to compiler
           CIBW_SKIP: "*-win32"
-          CIBW_ENVIRONMENT: PATH=C:\\msys64\\mingw64\\bin;C:\\msys64\\usr\\bin;C:/msys64/mingw64/bin;C:/msys64/usr/bin;$PATH
           CIBW_BEFORE_BUILD: "echo $PATH"
           # TODO: Look into universal2 support, but compilers and options
           #       will be tricky with the Fortran code and tests...
