@@ -31,6 +31,8 @@ jobs:
         run: |
           echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
           echo "C:\msys64\usr\bin" >> $GITHUB_PATH
+          echo "/c/msys64/mingw64/bin" >> $GITHUB_PATH
+          echo "/c/msys64/usr/bin" >> $GITHUB_PATH
           echo "FC=gfortran" >> $GITHUB_ENV
           echo "F77=gfortran" >> $GITHUB_ENV
           echo "F90=gfortran" >> $GITHUB_ENV
@@ -51,7 +53,7 @@ jobs:
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
           # Skip 32 bit windows builds due to compiler
           CIBW_SKIP: "*-win32"
-          CIBW_BEFORE_BUILD: "echo $PATH"
+          CIBW_BEFORE_BUILD: "echo $PATH && env && echo $GITHUB_PATH"
           # TODO: Look into universal2 support, but compilers and options
           #       will be tricky with the Fortran code and tests...
           CIBW_ARCHS_MACOS: x86_64
