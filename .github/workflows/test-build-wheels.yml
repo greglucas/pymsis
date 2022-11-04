@@ -37,6 +37,7 @@ jobs:
           echo "F77=gfortran" >> $GITHUB_ENV
           echo "F90=gfortran" >> $GITHUB_ENV
           echo "CC=gcc" >> $GITHUB_ENV
+          echo "FFLAGS=-O1" >> $GITHUB_ENV
 
       - uses: actions/setup-python@v4
         name: Install Python
