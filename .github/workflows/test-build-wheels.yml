@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [macos-latest]
     defaults:
       run:
         shell: bash
@@ -48,7 +48,7 @@ jobs:
           CIBW_BEFORE_BUILD: "echo $PATH && env && echo $GITHUB_PATH && which gcc && which gfortran"
           # TODO: Look into universal2 support, but compilers and options
           #       will be tricky with the Fortran code and tests...
-          CIBW_ARCHS_MACOS: x86_64
+          CIBW_ARCHS_MACOS: arm64
 
       - uses: actions/upload-artifact@v3
         with:
