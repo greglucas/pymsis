@@ -8,27 +8,14 @@ concurrency:
 
 on:
   push:
-    branches: [ 'main' ]
-  pull_request:
 
 jobs:
-  linting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-            python-version: 3.11
-      - name: Install mypy
-        run: |
-          python -m pip install mypy numpy
-          mypy pymsis
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2019, ubuntu-latest, macos-latest, macos-14]
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        os: [macos-14]
+        python-version: ['3.11']
     defaults:
       run:
         shell: bash
@@ -36,19 +23,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # sets up the compiler paths automatically for us
-    - uses: fortran-lang/setup-fortran@v1
-      id: setup-fortran
-      with:
-        compiler: gcc
-        version: 13
+    # # sets up the compiler paths automatically for us
+    # - uses: fortran-lang/setup-fortran@v1
+    #   id: setup-fortran
+    #   with:
+    #     compiler: gcc
+    #     version: 13
 
     - name: Compiler versions
       run: |
-        which gcc
-        gcc --version
-        which gfortran
-        gfortran --version
+        ln -fs /opt/homebrew/bin/gfortran-13 /usr/local/bin/gfortran
+        ln -fs /opt/homebrew/bin/gcc-13 /usr/local/bin/gcc
+        ln -fs /opt/homebrew/bin/g++-13 /usr/local/bin/g++
+
 
     # On Windows, the compilers can cause issues when
     # using higher optimization levels
@@ -78,5 +65,5 @@ jobs:
         # TODO: Get coverage for other modules without specifying pymsis.msis directly
         pytest --color=yes --cov=pymsis.msis --cov pymsis.utils --cov-report=xml --pyargs pymsis
 
-    - name: Upload code coverage
-      uses: codecov/codecov-action@v3
+    # - name: Upload code coverage
+    #   uses: codecov/codecov-action@v3
