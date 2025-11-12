@@ -25,8 +25,8 @@ from msis_options_utils import create_option_analysis_figure
 # * Diurnal variation of magnetic field geometry
 # * Solar wind-magnetosphere interaction timing
 #
-# This analysis shows how turning OFF this option affects atmospheric density
-# across different dimensions and conditions.
+# This analysis shows how enabling ONLY this option affects atmospheric density
+# compared to a baseline with all options disabled.
 
 option_index = 9
 option_name = "All UT Effects"
@@ -42,8 +42,8 @@ fig = create_option_analysis_figure(option_index, option_name)
 # between the four curves to understand temporal variability.
 #
 # **Panel B (Geographic Map)**: Reveals the global pattern of this atmospheric
-# effect. The contour plot shows percentage changes when the option is turned OFF
-# compared to the baseline (all options ON).
+# effect. The contour plot shows percentage changes when ONLY this option is enabled
+# compared to the baseline (all options OFF).
 #
 # **Panel C (Diurnal Cycle)**: Demonstrates how this effect varies throughout
 # a 24-hour period at a fixed location (45°N, 0°E, 300 km altitude).
@@ -64,6 +64,6 @@ plt.show()
 # * Critical for space weather applications
 # * Improves model accuracy during active conditions
 #
-# When this option is turned OFF, these physical processes are removed
-# from the atmospheric model, which can significantly impact the accuracy
-# of density predictions depending on the specific application and conditions.
+# When this option is enabled (starting from a baseline with all options OFF),
+# these physical processes are added to the atmospheric model, demonstrating
+# their specific contribution to atmospheric density variations.

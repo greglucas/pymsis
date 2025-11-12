@@ -108,12 +108,12 @@ def _create_altitude_panel(ax, option_index, f107, f107a, aps):
     lon, lat = 0, 45  # Equator, mid-latitude
     alts = np.linspace(100, 500, 100)  # Thermosphere focus
 
-    # Define options arrays
-    options_on = [1] * 25
-    options_off = options_on.copy()
-    options_off[option_index] = 0
+    # Define options arrays - NEW APPROACH: Start with all OFF, enable only target
+    options_off = [0] * 25  # Baseline: all options OFF
+    options_on = options_off.copy()
+    options_on[option_index] = 1  # Test: enable only the target option
 
-    # Calculate baseline densities (all options ON)
+    # Calculate baseline densities (all options OFF)
     baselines = {}
     tests = {}
 
@@ -123,15 +123,15 @@ def _create_altitude_panel(ax, option_index, f107, f107a, aps):
         ("summer_noon", date_summer_noon),
         ("summer_midnight", date_summer_midnight),
     ]:
-        # Baseline calculation
+        # Baseline calculation (all options OFF)
         baseline = pymsis.calculate(
-            date, lon, lat, alts, f107, f107a, aps, options=options_on
+            date, lon, lat, alts, f107, f107a, aps, options=options_off
         )
         baselines[condition] = np.squeeze(baseline)[:, pymsis.Variable.MASS_DENSITY]
 
-        # Test calculation (option OFF)
+        # Test calculation (only target option ON)
         test = pymsis.calculate(
-            date, lon, lat, alts, f107, f107a, aps, options=options_off
+            date, lon, lat, alts, f107, f107a, aps, options=options_on
         )
         tests[condition] = np.squeeze(test)[:, pymsis.Variable.MASS_DENSITY]
 
@@ -174,9 +174,9 @@ def _create_geographic_panel(ax, option_index, f107, f107a, aps):
     lon_grid, lat_grid = np.meshgrid(lons, lats)
 
     # Define options arrays
-    options_on = [1] * 25
-    options_off = options_on.copy()
-    options_off[option_index] = 0
+    options_off = [0] * 25  # Baseline: all options OFF
+    options_on = options_off.copy()
+    options_on[option_index] = 1  # Test: enable only the target option
 
     # Calculate density arrays
     density_on_surface = np.zeros_like(lon_grid)
@@ -185,22 +185,7 @@ def _create_geographic_panel(ax, option_index, f107, f107a, aps):
     # Calculate for each lat/lon combination
     for i, lat_val in enumerate(lats):
         for j, lon_val in enumerate(lons):
-            # Baseline (ON)
-            result_on = pymsis.calculate(
-                date_surface,
-                lon_val,
-                lat_val,
-                alt_surface,
-                f107,
-                f107a,
-                aps,
-                options=options_on,
-            )
-            density_on_surface[i, j] = np.squeeze(result_on)[
-                pymsis.Variable.MASS_DENSITY
-            ]
-
-            # Option OFF
+            # Baseline (all options OFF)
             result_off = pymsis.calculate(
                 date_surface,
                 lon_val,
@@ -215,9 +200,24 @@ def _create_geographic_panel(ax, option_index, f107, f107a, aps):
                 pymsis.Variable.MASS_DENSITY
             ]
 
-    # Calculate percentage difference
+            # Test (only target option ON)
+            result_on = pymsis.calculate(
+                date_surface,
+                lon_val,
+                lat_val,
+                alt_surface,
+                f107,
+                f107a,
+                aps,
+                options=options_on,
+            )
+            density_on_surface[i, j] = np.squeeze(result_on)[
+                pymsis.Variable.MASS_DENSITY
+            ]
+
+    # Calculate percentage difference (option ON vs baseline OFF)
     percent_diff_surface = (
-        100 * (density_off_surface - density_on_surface) / density_on_surface
+        100 * (density_on_surface - density_off_surface) / density_off_surface
     )
 
     # Create contour plot
@@ -264,28 +264,15 @@ def _create_diurnal_panel(ax, option_index, f107, f107a, aps):
     lon_temporal = 0
 
     # Define options arrays
-    options_on = [1] * 25
-    options_off = options_on.copy()
-    options_off[option_index] = 0
+    options_off = [0] * 25  # Baseline: all options OFF
+    options_on = options_off.copy()
+    options_on[option_index] = 1  # Test: enable only the target option
 
     density_on_temporal = []
     density_off_temporal = []
 
     for date in dates_temporal:
-        # Baseline (ON)
-        result_on = pymsis.calculate(
-            date,
-            lon_temporal,
-            lat_temporal,
-            alt_temporal,
-            f107,
-            f107a,
-            aps,
-            options=options_on,
-        )
-        density_on_temporal.append(np.squeeze(result_on)[pymsis.Variable.MASS_DENSITY])
-
-        # Option OFF
+        # Baseline (all options OFF)
         result_off = pymsis.calculate(
             date,
             lon_temporal,
@@ -300,11 +287,24 @@ def _create_diurnal_panel(ax, option_index, f107, f107a, aps):
             np.squeeze(result_off)[pymsis.Variable.MASS_DENSITY]
         )
 
+        # Test (only target option ON)
+        result_on = pymsis.calculate(
+            date,
+            lon_temporal,
+            lat_temporal,
+            alt_temporal,
+            f107,
+            f107a,
+            aps,
+            options=options_on,
+        )
+        density_on_temporal.append(np.squeeze(result_on)[pymsis.Variable.MASS_DENSITY])
+
     density_on_temporal = np.array(density_on_temporal)
     density_off_temporal = np.array(density_off_temporal)
 
     percent_diff_temporal = (
-        100 * (density_off_temporal - density_on_temporal) / density_on_temporal
+        100 * (density_on_temporal - density_off_temporal) / density_off_temporal
     )
 
     # Plot
@@ -313,7 +313,7 @@ def _create_diurnal_panel(ax, option_index, f107, f107a, aps):
 
     # Formatting
     ax.set_xlabel("Time (hours UT)")
-    ax.set_ylabel("Change when OFF (%)")
+    ax.set_ylabel("Change when ON (%)")
     ax.set_title(f"C) Diurnal Cycle at {lat_temporal}°N, {alt_temporal} km")
     ax.grid(True, alpha=0.3)
     ax.set_xlim(0, 24)
@@ -331,28 +331,15 @@ def _create_seasonal_panel(ax, option_index, f107, f107a, aps):
     lon_temporal = 0
 
     # Define options arrays
-    options_on = [1] * 25
-    options_off = options_on.copy()
-    options_off[option_index] = 0
+    options_off = [0] * 25  # Baseline: all options OFF
+    options_on = options_off.copy()
+    options_on[option_index] = 1  # Enable only the target option
 
     density_on_seasonal = []
     density_off_seasonal = []
 
     for date in dates_seasonal:
-        # Baseline (ON)
-        result_on = pymsis.calculate(
-            date,
-            lon_temporal,
-            lat_temporal,
-            alt_temporal,
-            f107,
-            f107a,
-            aps,
-            options=options_on,
-        )
-        density_on_seasonal.append(np.squeeze(result_on)[pymsis.Variable.MASS_DENSITY])
-
-        # Option OFF
+        # Baseline (all options OFF)
         result_off = pymsis.calculate(
             date,
             lon_temporal,
@@ -367,11 +354,24 @@ def _create_seasonal_panel(ax, option_index, f107, f107a, aps):
             np.squeeze(result_off)[pymsis.Variable.MASS_DENSITY]
         )
 
+        # Test (only target option ON)
+        result_on = pymsis.calculate(
+            date,
+            lon_temporal,
+            lat_temporal,
+            alt_temporal,
+            f107,
+            f107a,
+            aps,
+            options=options_on,
+        )
+        density_on_seasonal.append(np.squeeze(result_on)[pymsis.Variable.MASS_DENSITY])
+
     density_on_seasonal = np.array(density_on_seasonal)
     density_off_seasonal = np.array(density_off_seasonal)
 
     percent_diff_seasonal = (
-        100 * (density_off_seasonal - density_on_seasonal) / density_on_seasonal
+        100 * (density_on_seasonal - density_off_seasonal) / density_off_seasonal
     )
 
     # Plot
@@ -380,7 +380,7 @@ def _create_seasonal_panel(ax, option_index, f107, f107a, aps):
 
     # Formatting
     ax.set_xlabel("Month")
-    ax.set_ylabel("Change when OFF (%)")
+    ax.set_ylabel("Change when ON (%)")
     ax.set_title(f"D) Seasonal Cycle at {lat_temporal}°N, {alt_temporal} km")
     ax.grid(True, alpha=0.3)
     ax.set_xlim(1, 12)
